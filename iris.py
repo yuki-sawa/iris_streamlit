@@ -36,10 +36,25 @@ st.title('Iris Classifier')
 st.write('## Input value')
 
 # インプットデータ（1行のデータフレーム）
-value_df = pd.DataFrame([],columns=['data','sepal length (cm)','petal length (cm)'])
-record = pd.Series(['data',sepalValue, petalValue], index=value_df.columns)
-value_df = pd.concat([df, pd.DataFrame([record])], ignore_index=True)
-value_df.set_index('data',inplace=True)
+value_df = pd.DataFrame([], columns=['data', 'sepal length (cm)', 'petal length (cm)'])
+record = pd.Series([sepalValue, petalValue], index=['sepal length (cm)', 'petal length (cm)'])
+
+# DataFrameに行を追加するためにpandas.concatを使用
+value_df = pd.concat([value_df, pd.DataFrame([record])], ignore_index=True)
+value_df['data'] = 'data'  # 'data'列にデータを設定
+value_df.set_index('data', inplace=True)
 
 # 入力値の値
 st.write(value_df)
+
+# 予測値のデータフレーム
+pred_probs = clf.predict_proba(value_df)
+pred_df = pd.DataFrame(pred_probs,columns=['setosa','versicolor','virginica'],index=['probability'])
+
+st.write('## Prediction')
+st.write(pred_df)
+
+# 予測結果の出力
+name = pred_df.idxmax(axis=1).tolist()
+st.write('## Result')
+st.write('このアイリスはきっと',str(name[0]),'です!')
